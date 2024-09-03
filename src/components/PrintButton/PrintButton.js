@@ -1,3 +1,4 @@
+import './_print-button.scss';
 import React from 'react';
 import { Button } from '@carbon/react';
 import { Printer } from '@carbon/icons-react';

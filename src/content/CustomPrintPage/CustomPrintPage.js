@@ -1,3 +1,4 @@
+import './_custom-print-page.scss';
 import React, { useEffect, useRef } from 'react';
 //import ReactPDF from '@react-pdf/renderer';
 import { Page, Text, View, Document, StyleSheet, Image, usePDF, } from '@react-pdf/renderer';

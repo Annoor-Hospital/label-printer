@@ -1,3 +1,4 @@
+import './_patient-search-page.scss';
 import PatientTable from '../../components/PatientTable';
 import React, { useEffect, useState } from 'react';
 import { DataTableSkeleton } from '@carbon/react';
@@ -95,13 +96,18 @@ const PatientSearchPage = () => {
                 redirect: 'follow',
                 accept: "application/json",
             };
+            console.log(process.env);
             const url = "https://" + process.env.REACT_APP_BAHMNI_HOST + "/" + process.env.REACT_APP_OPENMRS_API_PATH + "/patient?q=" + encodeURIComponent(searchTerm) + "&limit=10";
+            console.log(url);
             const data = await fetch( url, requestOptions );
             const result_dict = await data.json();
             console.log("Returned result count: ", result_dict["results"].length);
             for (let i=0; i < result_dict['results'].length; i++) {
-                const url = result_dict['results'][i]['links'][0]['uri'].replace('http://','https://');
-                //console.log("Fetching URL, ",url);
+                console.log(result_dict['results'][i]);
+                let uuid = result_dict['results'][i]['uuid']
+                // const url = result_dict['results'][i]['links'][0]['uri'].replace('http://','https://');
+                const url = "https://" + process.env.REACT_APP_BAHMNI_HOST + "/" + process.env.REACT_APP_OPENMRS_API_PATH + "/patient/" + uuid;
+                console.log("Fetching URL, ",url);
                 const patient_details = await fetch( url, requestOptions )
                 let patient_details_dict = await patient_details.json();
                 if (patient_details_dict['error'] ){

@@ -1,10 +1,10 @@
+import './_print-dialog.scss';
 import React, { useEffect } from 'react';
 import {useState} from 'react';
 import { FlexGrid, Row, Column, Popover, PopoverContent, NumberInput } from '@carbon/react';
 import PrintButton from '../PrintButton';
 import SetupPrinter from './PrintLogic';
 import JsBarcode from 'jsbarcode';
-
 
 import { PDFViewer, Page, Image, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 

@@ -1,3 +1,4 @@
+import './_nav-header.scss';
 import React from 'react';
 
 import {Link as CarbonLink} from '@carbon/react';

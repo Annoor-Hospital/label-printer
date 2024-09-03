@@ -1,3 +1,4 @@
+import './_patient-table.scss';
 import React, {useState} from 'react';
 
 import {

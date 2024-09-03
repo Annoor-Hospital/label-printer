@@ -1,3 +1,4 @@
+import './_lab-order-page.scss';
 import LabOrderPatientTable from '../../components/LabOrderPatientTable';
 import React, { useEffect, useState } from 'react';
 import { DataTableSkeleton, Button } from '@carbon/react';
@@ -62,9 +63,11 @@ const LabOrderPage = () => {
     const refreshResults = () => {
         setRefreshRequested(true);
     }
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         async function getPatientList() {
+            setError(null);
             let patient_list = [];
             const requestHeaders = new Headers();
             console.log("Searching for patients with recent Lab Orders");
@@ -76,7 +79,15 @@ const LabOrderPage = () => {
             };
             const url = "https://" + process.env.REACT_APP_LAB_ORDER_API_HOST + "/" + process.env.REACT_APP_LAB_ORDER_API_PATH;
             console.log("Getting Lab Orders from:",process.env.REACT_APP_LAB_ORDER_API_HOST)
-            const data = await fetch( url, requestOptions );
+            let data;
+            try{
+                data = await fetch( url, requestOptions );
+            } catch(err){
+                console.log(err.message);
+                setRows([]);
+                setError(<span>Request failed. Open <a target="_blank" rel="noopener" href={url}>this page</a> and allow the certificate. Then push renew.</span>);
+                return [];
+            }
             const result_dict = await data.json();
             console.log("Got results: ", result_dict);
             console.log("Returned result count: ", result_dict.length);
@@ -89,7 +100,7 @@ const LabOrderPage = () => {
                     console.log("Fetched patient",patient_details_dict);
                     patient_list.push(getRowItems(patient_details_dict));
                 }
-            }   
+            }
             setLoading(false);
             setRows(patient_list);
             console.log(rows);
@@ -103,13 +114,19 @@ const LabOrderPage = () => {
 
     },[refreshRequested,rows])
     //console.log("Rows value: ", rows);
+    console.log(<></>);
     if (loading) {
         return (
+            <>
+            <div style={{display: error ? 'block' : 'none' }} class="laborder-error">{error}</div>
+            <Button renderIcon={Renew} iconDescription="refresh" onClick={refreshResults}>Renew</Button>
             <DataTableSkeleton columnCount={headers.length + 1} rowCount={10} headers={headers}/>
+            </>
         )
     }
     return (
         <>
+        <div style={{display: error ? 'block' : 'none' }} class="laborder-error">{error}</div>
         <Button renderIcon={Renew} iconDescription="refresh" onClick={refreshResults}>Renew</Button>
         <LabOrderPatientTable headers={headers} rows={rows} />
         </>

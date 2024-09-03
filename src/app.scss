@@ -3,10 +3,14 @@
     $use-flexbox-grid: true
 );
 
-@use './components/NavHeader/nav-header';
-@use './components/PrintDialog/print-dialog';
+// @use './components/NavHeader/nav-header';
+// @use './components/PrintDialog/print-dialog';
 
 .cds--content {
     margin-top: 3rem;
     margin-left: 0rem;
   }
+
+.cds--data-table-content{
+    overflow:visible;
+}
