@@ -77,8 +77,8 @@ const LabOrderPage = () => {
                 redirect: 'follow',
                 accept: "application/json",
             };
-            const url = "https://" + process.env.REACT_APP_LAB_ORDER_API_HOST + "/" + process.env.REACT_APP_LAB_ORDER_API_PATH;
-            console.log("Getting Lab Orders from:",process.env.REACT_APP_LAB_ORDER_API_HOST)
+            const url = "https://" + process.env.REACT_APP_BAHMNI_HOST + "/" + process.env.REACT_APP_OPENMRS_SQL_PATH + "?q="+process.env.REACT_APP_OPENMRS_SQL_VAR + "&v=default";
+            console.log("Getting Lab Orders from:",process.env.REACT_APP_BAHMNI_HOST)
             let data;
             try{
                 data = await fetch( url, requestOptions );
