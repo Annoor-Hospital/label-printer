@@ -6,6 +6,8 @@ This project requires a .env or .env.development file to be created in the root 
 REACT_APP_PARENT_PAGE_URL="<BAHMNI HOMEPAGE>"
 REACT_APP_BAHMNI_HOST="<BAHMNI HOST/IP ADDRESS>"
 REACT_APP_OPENMRS_API_PATH="openmrs/ws/rest/v1"
+REACT_APP_OPENMRS_SQL_PATH="openmrs/ws/rest/v1/bahmnicore/sql"
+REACT_APP_OPENMRS_SQL_VAR="labelprinter.sql.laborders"
 REACT_APP_API_USER="<API USER ON OPENMRS USERNAME>"
 REACT_APP_API_PASS="<API USER ON OPENMRS PASSWORD>"
 SQL_HOST="<BAHMNI DB HOST>"
@@ -13,6 +15,34 @@ SQL_USERNAME="<BAHMNI DB USERNAME>"
 SQL_PASSWORD="<BAHMNI DB PASSWORD>"
 REACT_APP_LAB_ORDER_API_HOST="<IP/PORT YOU RUN THE SERVER.JS SCRIPT>"
 REACT_APP_LAB_ORDER_API_PATH="api/labOrderPatients"
+```
+
+The required SQL script for lab orders needs to be put in openmrs config variable labelprinter.sql.laborders. The query is as follows:
+``` sql
+SELECT DISTINCT
+    CONCAT(COALESCE(pn.given_name,' '),' ',COALESCE(pn.middle_name,' '),' ',COALESCE(pn.family_name,' ')) AS name,
+    pa.value AS localName,
+    pi.identifier as identifier,
+    concat("",p.uuid) as uuid,
+    p.gender,
+    concat("",v.uuid) as activeVisitUuid,
+    IF(va.value_reference = "Admitted", "true", "false") as hasBeenAdmitted,
+    TIMESTAMPDIFF(YEAR, p.birthdate, CURDATE()) AS age
+from visit v
+join person_name pn on v.patient_id = pn.person_id and pn.voided = 0
+join person_attribute pa on pn.person_id = pa.person_id AND pa.person_attribute_type_id = 8
+join patient_identifier pi on v.patient_id = pi.patient_id
+join patient_identifier_type pit on pi.identifier_type = pit.patient_identifier_type_id
+join global_property gp on gp.property="bahmni.primaryIdentifierType" and gp.property_value=pit.uuid
+join person p on p.person_id = v.patient_id
+join orders on orders.patient_id = v.patient_id
+join order_type on orders.order_type_id = order_type.order_type_id and order_type.name != "Order" and order_type.name != "Drug Order"
+left outer join visit_attribute va on va.visit_id = v.visit_id and va.voided = 0 and va.attribute_type_id =
+    (select visit_attribute_type_id from visit_attribute_type where name="Admission Status")
+where v.date_stopped is null AND v.voided = 0 and order_id not in
+    (select obs.order_id
+    from obs
+    where person_id = pn.person_id and order_id = orders.order_id);
 ```
 
 ## Available Scripts
